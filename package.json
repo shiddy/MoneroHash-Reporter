@@ -1,0 +1,10 @@
+{
+  "name": "monerohash-reporter",
+  "description": "Reporting monerohash statistics via SMTP and SMS",
+  "version": "1.0.0",
+  "author": "Shiddy",
+  "licence": "GPL2",
+  "devDependencies": {
+    "serverless-python-requirements": "^3.3.0"
+  }
+}

@@ -1,0 +1,18 @@
+# Script Config info
+walletID: 'asdf'
+
+# currecy codes must match ISO 4217
+CurrencyCode: 'USD'
+
+serverLogs: true
+serverLogDirectory: ''
+serverLogLevel: 'INFO'
+
+twilioAPIKey: ''
+twilioAccount: ''
+destinationPhone: ''
+twilioPhone: ''
+
+sendgridAPIKey: ''
+destinationEmail: ''
+sendgridEmail: ''
