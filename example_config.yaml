@@ -2,7 +2,7 @@
 walletID: 'asdf'
 
 # currecy codes must match ISO 4217
-CurrencyCode: 'USD'
+currencyCode: 'USD'
 
 serverLogs: true
 serverLogDirectory: ''

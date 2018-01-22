@@ -1,0 +1,5 @@
+PyYAML ~= 3.12
+matplotlib ~= 2.1
+requests ~= 2.18
+sendgrid ~= 5.3
+twilio ~= 6.10
