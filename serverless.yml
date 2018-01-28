@@ -1,0 +1,33 @@
+service: monerohashdash
+
+provider:
+  name: aws
+  runtime: python3.6
+
+functions:
+  cron:
+    handler: fetch.run
+    events:
+      - schedule: cron(0 15 * * ? *)
+    environment:
+      MPLBACKEND: 'agg'
+
+package: 
+  exclude:
+    - tmp/**
+    - .git/**
+    - venv/**
+    - Testfetch.py
+    - example_config.yaml
+    - serverless.env
+    - temp.env
+    - tmpdata.json
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    zip: true
+
