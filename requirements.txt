@@ -3,3 +3,7 @@ matplotlib ~= 2.1
 requests ~= 2.18
 sendgrid ~= 5.3
 twilio ~= 6.10
+
+pytest ~= 3.3
+pytest-mock ~= 1.6
+fudge ~= 1.1

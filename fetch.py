@@ -17,7 +17,7 @@ from functools import reduce
 from matplotlib import rcParams
 from sendgrid.helpers.mail import Email, Content, Mail, Attachment
 from twilio.rest import Client
-from yaml import load
+import yaml
 import requests
 import sendgrid
 import matplotlib.dates as mdates
@@ -97,7 +97,7 @@ def buildImage(data):
 def getYamlConfigData(filename=''):
     try:
         with open(filename, 'r') as yamlInput:
-            data = load(yamlInput)
+            data = yaml.load(yamlInput)
             wid = data.get('walletID', False)
             cc = data.get('currencyCode', False)
             if wid and cc:
@@ -150,7 +150,7 @@ def getCurrencyConversion(cur_code):
     if rsp.status_code == 200:
         rspj = rsp.json()
         if rspj.get('ticker', False) and rspj['ticker'].get('price', False):
-            return (True, float(rspj['ticker']['price']))
+            return (True, "{0} {1}/XMR".format(float(rspj['ticker']['price']), cur_code))
         else:
             return (False, "Web API Format Changed, Parsing Error.")
     else: 
@@ -164,10 +164,10 @@ def makeHumanReadable(miningData, tickerData, verbose=False):
             hashrate = sts.get('hashrate', '0 H')
             if sts.get('balance', False) and sts.get('paid', False):
                 avg_hash = calc_avg_hashrate(miningData)
-                return "<strong>Current XMR Balance:</strong> {0}<br/>" \
+                return "<strong>Current XMR Balance:</strong> {0} XMR<br/>" \
                        "<strong>Current Hashrate:</strong> {1}<br/>" \
                        "<strong>Average Hash Rate:</strong> {2} H/s<br/>" \
-                       "<strong>Current Market:</strong> {3} USD/XMR".format(
+                       "<strong>Current Market:</strong> {3}".format(
                                makeFloatHumanReadable(sts['balance']),
                                hashrate,
                                round(avg_hash, TRUNCATE_FLOATS_TO),
@@ -180,8 +180,8 @@ def makeHumanReadable(miningData, tickerData, verbose=False):
                 avg_hash = calc_avg_hashrate(miningData)
                 return "Balance: {0} XMR\n" \
                        "CurHash: {1}\n" \
-                       "HashAvg: {2}\n" \
-                       "Current Market: {3} USD/XMR".format(
+                       "HashAvg: {2} H/s\n" \
+                       "Current Market: {3}".format(
                                makeFloatHumanReadable(sts['balance']),
                                hashrate,
                                round(avg_hash, TRUNCATE_FLOATS_TO),
@@ -217,6 +217,7 @@ def sendEmail(inputs, message, with_image=True, data=None):
         mail = Mail(from_email, subject, to_email, content)
 
     rsp = sg.client.mail.send.post(request_body=mail.get())
+    print(rsp)
 
     if str(rsp.status_code)[0] == '2':
         return True
@@ -256,7 +257,7 @@ def run(event, context):
     miningData = getMinerStats(walletID)[1]
 
     logger.info("Fetching XMR Price")
-    tickerData = getCurrencyConversion(inputs['currencyCode'])
+    tickerData = getCurrencyConversion(inputs['currencyCode'])[1]
     logger.info("Success")
 
     if inputs.get('twilioAPIKey', False) != '':
@@ -272,7 +273,7 @@ def run(event, context):
         logger.debug("sendgridAPIKey found attempting email send")
         humanReadable = makeHumanReadable(miningData, tickerData, True)
         logger.info("Sending Email")
-        if sendEmail(inputs, humanReadable, True, miningData):
+        if sendEmail(inputs, humanReadable, (lambda x: x.lower() == 'true')(inputs.get("emailWithImage", 'true')), miningData):
             logger.info("Success")
         else:
             logger.info("Failure")
