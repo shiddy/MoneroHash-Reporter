@@ -1,5 +1,5 @@
 # Script Config info
-walletID: 'asdf'
+walletID: ''
 
 # currecy codes must match ISO 4217
 currencyCode: 'USD'
@@ -16,3 +16,4 @@ twilioPhone: ''
 sendgridAPIKey: ''
 destinationEmail: ''
 sendgridEmail: ''
+emailWithImage: 'True'
